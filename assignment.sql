@@ -32,3 +32,16 @@ Problem 4 : Combine Two Tables
 select p.firstName, p.lastName, ifnull(a.city, Null) as city, 
 ifnull(a.state, Null) as state
 from Person p left join Address a on p.personId = a.personId
+
+Problem 5 : Customers with Strictly Increasing Purchases
+
+with yearly as
+(select customer_id, year(order_date) as year, sum(price) as price
+from orders
+group by year(order_date),customer_id)
+
+select y1.customer_id from
+yearly y1 left join yearly y2 on y1.customer_id = y2.customer_id 
+and y1.year + 1 = y2.year and y1.price < y2.price
+group by y1.customer_id
+having count(y1.customer_id) - count(y2.customer_id) = 1
